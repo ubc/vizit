@@ -40,12 +40,40 @@ docker run -it -v /PATH/TO/GOOGLE_CREDENTIALS:/home/jovyan/work/google.json -v /
 ```
 All the pages will be placed inside `vizit` directory.
 
-
-## Developer
+## Developers
 
 * Clone the current repository
 
-* Copy Google Credentials into the repo directory and name it as `google.json`
+### Download from edX and upload to Google BigQuery
+
+* Get in touch with edX for arranging data downloads for your institution
+
+* Set up credentials for data download [here](http://edx.readthedocs.io/projects/devdata/en/latest/data_czars/credentials.html)
+
+* Set up your passphrase to phrase.txt
+
+* Edit edx_weekly_course_data_download_import2BigQuery.sh and edx_download_dailyevents_moveto_BigQuery.sh to specify your directories, as appropriate
+
+* Clone the edx2bigquery [repository](https://github.com/mitodl/edx2bigquery) and follow their [instructions](https://github.com/mitodl/edx2bigquery/blob/master/README.md) for installation
+
+* Maintain the list of courses for which you wish to upload events and course data in edx2bigquery_config.py from edx2bigquery 
+
+* Set up cronjobs for uploading events daily, and course data weekly:
+```
+0 8 * * * source /yourdirectory/.bash_profile; /yourdirectory/edx_download_dailyevents_moveto_BigQuery.sh >> /yourdirectory/events.log 2>&1
+```
+```
+0 11 * * 1 source /yourdirectory/.bash_profile; /yourdirectory/edx_weekly_course_data_download_import2BigQuery.sh >> /yourdirectory/courses.log 2>&1
+```
+
+* Set up a cronjob for automatically adding new courses, as they appear in the edX dumps, to edx2bigquery_config.py
+```
+0 11 * * 2 cd /yourdirectory; /yourdirectory/python /yourdirectory/addcourses.py
+```
+
+### Generate dashboards pages
+
+* Copy your Google Credential file into the repo directory and name it as `google.json`
 
 * Copy the course list `courses.txt` into the repo directory and name it as `courses.txt`
 
@@ -53,11 +81,27 @@ All the pages will be placed inside `vizit` directory.
 
 * Run the following command to generate the pages:
 ```bash
-docker run -it -v $(pwd):/home/jovyan/work ubcctlt/vizit ./generate.sh
+docker run -it -v $(pwd):/home/jovyan/work yourdirectory/vizit ./generate.sh
 ```
-The pages will be generated in `results/` directory
+The pages will be generated in the `results/` directory
 
-* To generate a single page just run command
+* To generate a single page simply run the command
 ```bash
-docker run -it -v $(pwd):/home/jovyan/work -e current_course=COURSE_NAME ubcctlt/vizit jupyter nbconvert --execute $current_course coursepage.ipynb --ExecutePreprocessor.kernel_name=python && mv coursepage.html results/$current_course.html
+docker run -it -v $(pwd):/home/jovyan/work -e current_course=COURSE_NAME yourdirectory/vizit jupyter nbconvert --execute $current_course coursepage.ipynb --ExecutePreprocessor.kernel_name=python && mv coursepage.html results/$current_course.html
+```
+
+* To periodically generate dashboards pages, set a cronjob:
+```
+0 11 * * 2 cd /yourdirectory/vizit; docker run -v $(pwd):/home/jovyan/work yourdirectory/vizit ./generate.sh >> generatedashboards.log 2>&1
+```
+
+### Deploy VizIT
+
+* Set up a build system with a Git repository that will deploy to a public-facing website/URL
+
+* Edit deploy.sh to match your directories as appropriate
+
+* Set up a cronjob to periodically deploy generated dashboards pages:
+```
+0 14 * * 2 /bin/bash /yourdirectory/deploy.sh >> /yourdirectory/generatepushalledge.log 2>&1
 ```
