@@ -66,7 +66,10 @@ All the pages will be placed inside `vizit` directory.
 0 11 * * 1 source /yourdirectory/.bash_profile; /yourdirectory/edx_weekly_course_data_download_import2BigQuery.sh >> /yourdirectory/courses.log 2>&1
 ```
 
-* Set up a cronjob for automatically adding new courses, as they appear in the edX dumps, to edx2bigquery_config.py
+* Set up cronjobs for automatically adding new courses, as they appear in the edX dumps, to edx2bigquery_config.py
+```
+55 10 * * 2 cd /yourdirectory/rawsqldir/; DIRECTORY=$(ls -td -- */ | head -n 1); ls $DIRECTORY | grep .xml.tar.gz > /yourdirectory/directory.txt
+```
 ```
 0 11 * * 2 cd /yourdirectory; /yourdirectory/python /yourdirectory/addcourses.py
 ```
