@@ -29,6 +29,8 @@
 
 ## Using VizIT
 
+* Replace occurrences of "yourprojectname" in the .ipynb files with your BigQuery project name
+
 * Create an empty directory to host generated pages
 ```bash
 mkdir vizit
@@ -80,7 +82,7 @@ All the pages will be placed inside `vizit` directory.
 
 * Copy the course list `courses.txt` into the repo directory and name it as `courses.txt`
 
-* Update the ipynb files
+* Update the ipynb files; replace occurrences of "yourprojectname" in the .ipynb files with your BigQuery project name
 
 * Run the following command to generate the pages:
 ```bash
