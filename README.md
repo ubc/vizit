@@ -23,7 +23,13 @@
     * Put the *.json file you just downloaded in a directory of your choosing. This directory must be private (you can't let anyone get access to this).
     * Set the environment variable GOOGLE_APPLICATION_CREDENTIALS to the path of the JSON file downloaded."
 
-3. Prepare a list of the courses to be processed (one course name a row) and put them into a file named `courses.txt`
+3. Prepare a list of the courses to be processed (one course name a row) and put them into a file named `courses.txt`. To maintain and update the list of courses to generate dashboards for, without accessing the server, first create a Google spreadsheet, set it to view-only, then further give edit permissions to the relevant users. Place addcoursestogenerate.py at /yourdirectory and set a cronjob:
+
+```
+45 10 * * 2 cd /yourdirectory; /yourdirectory/python /yourdirectory/addcoursestogenerate.py
+```
+
+The relevant users can then add courses to the spreadsheet; the cronjob will take these courses and add them to courses.txt, which is used to generate dashboards. This way, users can specify new courses to generate dashboards for without having to edit courses.txt on the server.
 
 4. You also need to load all your edX data into Google BigQuery using [edx2bigquery](https://github.com/mitodl/edx2bigquery)
 
@@ -80,7 +86,13 @@ All the pages will be placed inside `vizit` directory.
 
 * Copy your Google Credential file into the repo directory and name it as `google.json`
 
-* Copy the course list `courses.txt` into the repo directory and name it as `courses.txt`
+* Copy the course list `courses.txt` into the repo directory and name it as `courses.txt`. To maintain and update the list of courses to generate dashboards for, without accessing the server, first create a Google spreadsheet, set it to view-only, then further give edit permissions to the relevant users. Place addcoursestogenerate.py at /yourdirectory and set a cronjob:
+
+```
+45 10 * * 2 cd /yourdirectory; /yourdirectory/python /yourdirectory/addcoursestogenerate.py
+```
+
+The relevant users can then add courses to the spreadsheet; the cronjob will take these courses and add them to courses.txt, which is used to generate dashboards. This way, users can specify new courses to generate dashboards for without having to edit courses.txt on the server.
 
 * Update the ipynb files; replace occurrences of "yourprojectname" in the .ipynb files with your BigQuery project name
 
